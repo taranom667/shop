@@ -37,18 +37,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_simplejwt',
     'User',
-    'Cart',
+    'Category',
     'Product',
     'Order',
-    'Inventory',
+    'OrderItem',
     'Shipment',
     'Wishlist',
     'Payment',
-    'rest_framework',
-    'rest_framework_simplejwt',
-
-
+    'Address',
+    'ProductImage',
+    'Cart',
+    'CartItem',
 ]
 
 
@@ -138,6 +140,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
 
     ),
+    'DEFAULT_FILTER_BACKENDS':['django_filters.rest_framework.DjangoFilterBackend']
+
+
 
 }
 

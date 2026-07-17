@@ -21,8 +21,11 @@ from User.views import RegisterUserAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login',jwt_views.TokenObtainPairView.as_view(),name='token_obtain_pair' ),
-    path('register', RegisterUserAPI.as_view()),
+    path('login/',jwt_views.TokenObtainPairView.as_view(),name='token_obtain_pair' ),
+    path('register/', RegisterUserAPI.as_view()),
+    path('Products/',include('Product.urls')),
+    path('Address/',include('Address.urls')),
+    path('CartItem/',include('CartItem.urls')),
 
 
 ]
