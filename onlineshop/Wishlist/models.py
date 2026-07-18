@@ -5,4 +5,4 @@ from User.models import CustomUser
 
 class Wishlist(models.Model):
     id=models.AutoField(primary_key=True)
-    user=models.OneToOneField(CustomUser,on_delete=models.CASCADE)
+    user=models.OneToOneField(CustomUser,on_delete=models.CASCADE,null=True)
