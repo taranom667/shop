@@ -11,4 +11,5 @@ class Order(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True,blank=True,related_name='Order')
 
-
+    def __str__(self):
+        return f'id:{self.id},  Order status: {self.status}, user: {self.user.username}'

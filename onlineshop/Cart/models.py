@@ -8,6 +8,8 @@ class Cart(models.Model):
     id=models.AutoField(primary_key=True)
     user=models.OneToOneField(CustomUser,on_delete=models.CASCADE,null=True,blank=True,related_name='cart')
 
+    def __str__(self):
+        return self.user.username + "'s cart"
 
 '''
 caculate total
