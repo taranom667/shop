@@ -6,19 +6,8 @@ from rest_framework.permissions import AllowAny
 from .serializers import RegisterUserSerializer
 
 
-# Create your views here.
 class RegisterUserAPI(generics.CreateAPIView):
     serializer_class = RegisterUserSerializer
     permission_classes = (AllowAny,)
-    #cart creatation
 
 
-
-'''
-add user
-delete user
-update user
-
-
-
-'''
