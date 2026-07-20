@@ -21,6 +21,7 @@ from User.views import RegisterUserAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('User/', include('User.urls')),
     path('Authentication/',include('Authentication.urls')),
     path('Products/',include('Product.urls')),
     path('Address/',include('Address.urls')),
