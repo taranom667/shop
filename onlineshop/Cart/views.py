@@ -1,37 +1,25 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
+
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Cart
 from .serializers import CartSerializer
+from CartItem.models import CartItem
+
+# yekari kon be mahz sakht user enam sakhte she va kolan yek doonas
+
+class DeleteCartApi(request):
+    Cart = request.user.Cart
+    Cart.CartItem.objects.all().delete()
 
 
-#yekari kon be mahz sakht user enam sakhte she va kolan yek doonas
-
-#cart creation
-
-# def total_price
-
-
-
-
-@login_required
-def clear_cart(request):
-    if request.method == 'POST':
-        Cart.objects.get(user=request.user).delete()
-        messages.success(request, "Your cart has been cleared.")
-    return redirect('cart:cart_detail')
+class CreateCartApi(generics.CreateAPIView):
+    user = request.user
+    serializer_class = CartSerializer
 
 
 class GetCartApi(generics.RetrieveAPIView):
-    def get_queryset(self):
-        return Cart.objects.get(user=self.request.user)
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
-
-#GET/CART/SUMMERY
-
-
-
+    def get_queryset(self):
+        return Cart.objects.get(user=self.request.user)

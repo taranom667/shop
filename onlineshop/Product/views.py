@@ -1,7 +1,6 @@
 from hmac import new
-
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from .models import Product
 from .serializers import ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,18 +13,21 @@ class GetAllProductsAPI(generics.ListAPIView):
     filterset_fields = ['category', 'in_stock']
     permission_classes = [AllowAny]
 
-#is admin
+
+# is admin
 class AddProductAPI(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-#is admin
+
+# is admin
 class UpdateProductAPI(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
 
-#is admin
+
+# is admin
 class DeleteProductAPI(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -33,10 +35,11 @@ class DeleteProductAPI(generics.DestroyAPIView):
 
 
 class GetProductAPI(generics.RetrieveAPIView):
-    queryset = Product.objects.all() #???????????
+    queryset = Product.objects.all()  # ???????????
     lookup_field = 'id'
     serializer_class = ProductSerializer
-    #filter_backends = [DjangoFilterBackend]
+    # filter_backends = [DjangoFilterBackend]
+
 
 '''  
 class searchProductAPI(generics.ListAPIView):
@@ -46,8 +49,7 @@ class searchProductAPI(generics.ListAPIView):
     filterset_fields = ['category', 'in_stock'] #??????????/
     permission_classes = [AllowAny]'''
 
-
-#FILTER?????????????????????????????????//
+# FILTER?????????????????????????????????//
 '''
 class FilterProductAPI(generics.ListAPIView):
     queryset = Product.objects.all()
@@ -62,8 +64,3 @@ sort
 new
 popular
 related'''
-
-
-
-
-
