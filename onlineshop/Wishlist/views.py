@@ -1,20 +1,42 @@
-from django.apps import AppConfig
-from django.shortcuts import render
-from django.template.context_processors import request
-from rest_framework.generics import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, request
 from User.models import CustomUser
 from Product.models import Product
-from
+from Wishlist.models import Wishlist
+from .serializer import WishlistSerializer
+
+class CreateWishlist(generics.CreateAPIView):
+    serializer_class = WishlistSerializer
 
 
-# Create your views here.
-# add to wishlist
-# hazf as wish list
-# see all the items in your wish list
-# delete all items from your wish list
+class WishlistItems(generics.ListAPIView):
+    def get_queryset(self):
+        wishlist = Wishlist.objects.get(user=self.request.user)
+        return wishlist.products.all()
+    permission_classes = [IsAuthenticated]
 
-class AddToWishlist(request):
-    object = get_object_or_404(Product, id=Product.id)
-    wishlist = request.user.wishlist
-    wishlist.product = object
+
+class WishlistDelete(generics.DestroyAPIView):
+    def get_queryset(self):
+        wishlist = Wishlist.objects.get(user=self.request.user)
+        return wishlist.products.all()
+    permission_classes = [IsAuthenticated]
+
+@csrf_exempt
+@login_required
+def add_to_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    wishlist = Wishlist.objects.get(user=request.user)
+    wishlist.products.add(product)
+    wishlist.save()
+
+@csrf_exempt
+@login_required
+def remove_from_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    wishlist = Wishlist.objects.get(user=request.user)
+    wishlist.products.remove(product)
     wishlist.save()

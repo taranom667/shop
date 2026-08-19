@@ -18,6 +18,7 @@ class Product(models.Model):
     stock = models.IntegerField(default=0)
 
 
+
     class Meta:
         ordering = ['-created_at']
 
