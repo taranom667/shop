@@ -1,6 +1,6 @@
 from hmac import new
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from .models import Product
 from .serializers import ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,7 +13,10 @@ class GetAllProductsAPI(generics.ListAPIView):
     filterset_fields = ['category', 'in_stock']
     permission_classes = [AllowAny]
 
-
+class CreateProductAPI(generics.CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAdminUser]
 # is admin
 class AddProductAPI(generics.CreateAPIView):
     queryset = Product.objects.all()

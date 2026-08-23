@@ -1,25 +1,31 @@
-from django.contrib.auth.models import User
-from rest_framework import generics,request
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import Cart
 from .serializers import CartSerializer
 from CartItem.models import CartItem
 
-# yekari kon be mahz sakht user enam sakhte she va kolan yek doonas
-
-'''class DeleteCartApi(request):
-    Cart = request.user.Cart
-    Cart.CartItem.objects.all().delete()
-
-
 class CreateCartApi(generics.CreateAPIView):
-    user =request.user
-    serializer_class = CartSerializer'''
-
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+    serializer_class = CartSerializer
 
 class GetCartApi(generics.RetrieveAPIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return self.retrieve(request, *args, **kwargs)
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Cart.objects.get(user=self.request.user)
+
+#Empty the cart
+class DeleteCartItemsApi(generics.DestroyAPIView):
+    def get_queryset(self):
+        user = self.request.user
+        return user.Cart.CartItem.objects.all()
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+    permission_classes = [IsAuthenticated]
