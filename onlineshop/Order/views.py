@@ -19,7 +19,6 @@ class GetOrderApi(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 class CreateOrderApi(generics.CreateAPIView):
-    #check in ke pardakht anjam shode
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 

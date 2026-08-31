@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from Category.models import Category
+
 
 # Create your models here.
 class Product(models.Model):
@@ -13,10 +15,9 @@ class Product(models.Model):
                                 )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     stock = models.IntegerField(default=0)
-
-    # category = models.ForeignKey(Category,max_length=128,on_delete=models.DO_NOTHING ,related_name='category',null=True,blank=True)
+    category = models.ForeignKey(Category,max_length=128,on_delete=models.DO_NOTHING ,related_name='category',null=True,blank=True)
 
     class Meta:
         ordering = ['-created_at']

@@ -12,5 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+
+
+class Serializer(serializers.ModelSerializer):
     pass

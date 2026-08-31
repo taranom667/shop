@@ -1,6 +1,5 @@
 from django.db import models
 from User.models import CustomUser
-#from CartItem.models import CartItem
 
 
 class Cart(models.Model):
