@@ -3,7 +3,7 @@ from User.models import CustomUser
 
 from Address.models import Address
 
-
+from django.db.models import  Sum
 # Create your models here.
 class Order(models.Model):
     status_choices = TYPE_CHOICES = (
@@ -26,3 +26,8 @@ class Order(models.Model):
 
 def __str__(self):
     return f'id:{self.id},  Order status: {self.status}, user: {self.user.username}'
+
+
+
+def total_amount(self):
+    self.Order.CartItem.objects.all().aggregate(total_amount=Sum('price_at_purchase'))

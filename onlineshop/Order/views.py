@@ -20,6 +20,7 @@ class GetOrderApi(generics.RetrieveAPIView):
 
 class CreateOrderApi(generics.CreateAPIView):
     serializer_class = OrderSerializer
+    queryset = Order.objects.all()
     permission_classes = [IsAuthenticated]
 
 

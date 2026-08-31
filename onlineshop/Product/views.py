@@ -2,17 +2,17 @@ from rest_framework import generics, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
-
 from .models import Product
 from .serializers import ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
 class GetAllProductsAPI(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category', 'in_stock']
+    filterset_fields = ['category', 'stock', 'price']
     permission_classes = [AllowAny]
 
 
@@ -26,6 +26,7 @@ class CreateProductAPI(generics.CreateAPIView):
 class AddProductAPI(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAdminUser]
 
 
 # is admin
@@ -33,6 +34,7 @@ class UpdateProductAPI(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
+    permission_classes = [IsAdminUser]
 
 
 # is admin
@@ -40,17 +42,14 @@ class DeleteProductAPI(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
+    permission_classes = [IsAdminUser]
 
 
 class GetProductAPI(generics.RetrieveAPIView):
     queryset = Product.objects.all()  # ???????????
     lookup_field = 'id'
     serializer_class = ProductSerializer
-    # filter_backends = [DjangoFilterBackend]
-
-
-from rest_framework import filters
-from rest_framework.pagination import PageNumberPagination
+    filter_backends = [DjangoFilterBackend]
 
 
 class ProductListView(GenericAPIView):
@@ -76,4 +75,3 @@ class ProductListView(GenericAPIView):
         # If no pagination, return the full response
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
