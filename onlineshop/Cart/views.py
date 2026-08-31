@@ -4,10 +4,6 @@ from .models import Cart
 from .serializers import CartSerializer
 from CartItem.models import CartItem
 
-class CreateCartApi(generics.CreateAPIView):
-    def get_queryset(self):
-        return Cart.objects.filter(user=self.request.user)
-    serializer_class = CartSerializer
 
 class GetCartApi(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):

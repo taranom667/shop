@@ -1,10 +1,8 @@
-from hmac import new
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAdminUser
 from .models import Product
 from .serializers import ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
-
 
 class GetAllProductsAPI(generics.ListAPIView):
     queryset = Product.objects.all()

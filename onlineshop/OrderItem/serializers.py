@@ -3,8 +3,8 @@ from rest_framework import serializers
 from .models import OrderItem
 
 
-class orderItemSerializer(serializers.ModelSerializer):
+class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = '__all__'
+        fields =('id','name','order','price','quantity','created_at','updated_at')
         read_only_fields = ('id',)
