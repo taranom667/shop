@@ -4,8 +4,8 @@ from django.db import models
 from Product.models import Product
 
 class CartItem(models.Model):
-    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='cartitem')
-    product=models.ForeignKey(Product,on_delete=models.CASCADE,null=True,related_name='cartitem')
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='cart_item')
+    product=models.ForeignKey(Product,on_delete=models.CASCADE,null=True,related_name='cart_item')
     quantity=models.IntegerField(default=1)
     created_at=models.DateTimeField(auto_now_add=True,null=True)
     updated_at=models.DateTimeField(auto_now=True,null=True)
