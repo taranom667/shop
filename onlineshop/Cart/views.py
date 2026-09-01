@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -20,14 +20,14 @@ class CreateCartApi(generics.CreateAPIView):
 
 
 class GetCartApi(generics.RetrieveAPIView):
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        return self.retrieve(request, *args, **kwargs)
     serializer_class = CartSerializer
     permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    def get_object(self):
+        return Cart.objects.get(user=self.request.user)
 
     def get_queryset(self):
-        return Cart.objects.get(user=self.request.user)
+        return Cart.objects.filter(user=self.request.user)
 
 #Empty the cart
 class DeleteCartItemsApi(generics.DestroyAPIView):
