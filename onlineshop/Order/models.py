@@ -1,6 +1,5 @@
 from django.db import models
 from User.models import CustomUser
-
 from Address.models import Address
 
 from django.db.models import  Sum
