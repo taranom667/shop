@@ -3,16 +3,18 @@ from User.models import CustomUser
 from Address.models import Address
 from django.db.models import Sum
 
+from OrderItem.models import OrderItem
 
 class Order(models.Model):
-    status_choices = TYPE_CHOICES = (
-        ('OP', 'Order_Placed'),
-        ('OC', 'Order_Confirmed'),
-        ('OP', 'Order_Processing'),
-        ('IT', 'In_Transit'),
-        ('OFD', 'Out_for_Delivery'),
-        ('D', 'Delivered'),
-        ('OFD', 'Out_for_Delivery'),)
+    status_choices = (
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('processing', 'Processing'),
+        ('in_transit', 'In Transit'),
+        ('out_for_delivery', 'Out for Delivery'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+    )
 
     id = models.AutoField(primary_key=True)
     status = models.CharField(max_length=10, choices=status_choices, default='pending')
@@ -23,9 +25,14 @@ class Order(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE, related_name='Order')
 
 
-def __str__(self):
-    return f'id:{self.id},  Order status: {self.status}, user: {self.user.username}'
+    def __str__(self):
+        return f'id:{self.id},  Order status: {self.status}, user: {self.user.username}'
 
+    def __str__(self):
+        return f'Order #{self.id} - {self.status} - {self.user.username}'
 
-def total_amount(self):
-    self.Order.CartItem.objects.all().aggregate(total_amount=Sum('price_at_purchase'))
+    def calculate_total(self):
+        """Calculate total from order items"""
+        return OrderItem.objects.filter(Order=self).aggregate(
+            total=Sum(models.F('price_at_time') * models.F('quantity'), output_field=models.DecimalField())
+        )['total'] or 0
