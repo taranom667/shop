@@ -3,8 +3,6 @@ from User.models import CustomUser
 from Address.models import Address
 from django.db.models import Sum
 
-from OrderItem.models import OrderItem
-
 class Order(models.Model):
     status_choices = (
         ('pending', 'Pending'),
@@ -17,8 +15,8 @@ class Order(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    status = models.CharField(max_length=10, choices=status_choices, default='pending')
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='Order')
+    status = models.CharField( choices=status_choices, default='pending')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='Order',null=True,blank=True)
     total_amount = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -28,11 +26,10 @@ class Order(models.Model):
     def __str__(self):
         return f'id:{self.id},  Order status: {self.status}, user: {self.user.username}'
 
-    def __str__(self):
-        return f'Order #{self.id} - {self.status} - {self.user.username}'
+
 
     def calculate_total(self):
         """Calculate total from order items"""
-        return OrderItem.objects.filter(Order=self).aggregate(
+        return self.OrderItem.objects.filter(Order=self).aggregate(
             total=Sum(models.F('price_at_time') * models.F('quantity'), output_field=models.DecimalField())
         )['total'] or 0

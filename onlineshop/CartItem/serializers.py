@@ -11,6 +11,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields=('id', 'cart','product','quantity','created_at','updated_at','price_at_purchase')
         read_only_fields=('id', 'created_at','updated_at')
+
     def get_total_price(self, obj):
-        return obj.total_price_at_purchase*obj.quantity
+        return obj.price_at_purchase*obj.quantity
 

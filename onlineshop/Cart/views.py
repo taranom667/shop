@@ -1,8 +1,22 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import Cart
 from .serializers import CartSerializer
 from CartItem.models import CartItem
+
+class CreateCartApi(generics.CreateAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 
 class GetCartApi(generics.RetrieveAPIView):
@@ -25,3 +39,5 @@ class DeleteCartItemsApi(generics.DestroyAPIView):
         instance.delete()
 
     permission_classes = [IsAuthenticated]
+
+

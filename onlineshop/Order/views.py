@@ -18,7 +18,7 @@ class GetOrdersApi(generics.ListAPIView):
 class GetOrderApi(generics.RetrieveAPIView):
     lookup_field = 'id'
     def get_queryset(self):
-        return Order.objects.get(user=self.request.user,id=lookup_field)
+        return Order.objects.get(user=self.request.user)
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 

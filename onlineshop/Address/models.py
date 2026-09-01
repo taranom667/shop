@@ -7,7 +7,7 @@ class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='address')
     receiver_name = models.CharField(max_length=100, null=True, blank=True)
     receiver_email = models.EmailField(max_length=100, null=True, blank=True)
-    postal_code = models.CharField(max_length=12, )
+    postal_code = models.CharField(max_length=12,null=True, blank=True)
     country = models.CharField(max_length=50, null=True, blank=True)
     province = models.CharField(max_length=50, null=True, blank=True)
     city = models.CharField(max_length=50, null=True, blank=True)

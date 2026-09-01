@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateCartApi, GetCartApi
+from .views import  GetCartApi,CreateCartApi
 
 urlpatterns = [
     path('', GetCartApi.as_view(), name='get-cart'),
