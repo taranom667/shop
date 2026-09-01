@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'Order',
     'OrderItem',
     'Wishlist',
-    'Category'
+    'Category',
     'Address',
     'Cart',
     'CartItem',

@@ -1,104 +1,100 @@
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.db.models import F
-from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.shortcuts import get_object_or_404
 from .models import CartItem
-from Product.models import Product
-from django.shortcuts import render, redirect, get_object_or_404
-
 from .serializers import CartItemSerializer
+from Product.models import Product
+from Cart.models import Cart
 
 
-@csrf_exempt
-@login_required
-def increase_cartItem_quantity_api(request,product_id):
-    product = get_object_or_404(Product, id=product_id)
-    user=request.user
-    if request.method == "POST":
-         cart_item = user.cart.CarItem.Product.objects.get(id=product.id)
-         if  int(cart_item.product.stock) >=1:
-             cart_item.update(quantity=F('quantity') + 1)
-             cart_item.save()
-             messages.success(request,"Cart updated successfully.")
+class AddToCartAPI(generics.CreateAPIView):
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
 
-         else: messages.error(request, "Invalid quantity.")
+    def create(self, request, *args, **kwargs):
+        product_id = request.data.get('product_id')
+        quantity = request.data.get('quantity', 1)
 
-    return redirect('cart:cart_detail')
+        product = get_object_or_404(Product, id=product_id)
+        cart = get_object_or_404(Cart, user=request.user)
 
-@csrf_exempt
-@login_required
-def create_cartItem_api(request,product_id):
-    product = get_object_or_404(Product, id=product_id)
-    user = request.user
+        # Check stock
+        if quantity > product.stock:
+            return Response(
+                {'error': f'Only {product.stock} items available in stock'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-    if product in user.cart.CarItem.Product.objects.all() :
-        increase_cartItem_quantity_api(request, product.id)
-    else:
-
-        if not product.is_available:
-            messages.error(request, f"{product.name} is out of stock.")
-        else:    return redirect('products:product_detail', product_id=product.id)
-
-        cart_item ,created= CartItem.objects.create(
-            user=request.user,
+        # Add or update cart item
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
             product=product,
-            defaults={'quantity':1},
-            Cart=request.user.Cart
+            defaults={'quantity': quantity, 'price_at_purchase': product.price}
         )
 
         if not created:
-            if cart_item.increase_quantity():
-                cart_item.save()
-                messages.success(request, f"Increased {product.name} quantity to {cart_item.quantity}.")
-            else:
-                messages.warning(request, f"Cannot add more. Only {product.stock} in stock.")
-        else:
-            cart_item.Cart=request.user.Cart
-            messages.success(request, f"{product.name} added to your cart.")
+            # Item already in cart, increase quantity
+            new_quantity = cart_item.quantity + quantity
+            if new_quantity > product.stock:
+                return Response(
+                    {'error': f'Cannot add {quantity} items. Only {product.stock} in stock'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            cart_item.quantity = new_quantity
+            cart_item.save()
 
-        return redirect('cart:cart_detail')
+        serializer = self.get_serializer(cart_item)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
-@csrf_exempt
-@login_required
-def decrease_cartItem_quantity_api(request,product_id):
-    product = get_object_or_404(Product, id=product_id)
-    user=request.user
-    cart_item = user.cart.CarItem.Product.objects.get(id=product.id)
-
-    if request.method == "POST":
-        if cart_item.quantity>=1:
-         cart_item.update(quantity=F('quantity') - 1)
-         cart_item.save()
-         messages.success(request,"CartItem quantity decreased successfully.")
-        else:
-            user.cart.CarItem.delete()
-    return redirect('cart:cart_detail')
-
-@csrf_exempt
-@login_required
-def cartitem_detail(request,cartitem_id):
-    user = request.user
-    cart_item= user.cart.CarItem.objects.get(id=cartitem_id)
-    total_price = sum(item.total_price for item in cart_item)
-    total_items = sum(item.quantity for item in cart_item)
-
-    context = {
-        'cart_items': cart_item,
-        'total_price': total_price,
-        'total_items': total_items,
-    }
-
-    return render(request, 'cart/cart_detail.html', context)
-
-class DeleteCartItemApi(APIView):
-    permission_classes = [IsAuthenticated]
+class UpdateCartItemAPI(generics.UpdateAPIView):
+    """Update quantity of item in cart"""
     serializer_class = CartItemSerializer
-    def get_queryset(self,product_id):
-        user=self.request.user
-        return CartItem.objects.get(id=product_id,user=user)
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
 
+    def get_queryset(self):
+        return CartItem.objects.filter(cart__user=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        cart_item = self.get_object()
+        quantity = request.data.get('quantity')
+
+        if not quantity or quantity < 1:
+            return Response(
+                {'error': 'Quantity must be at least 1'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if quantity > cart_item.product.stock:
+            return Response(
+                {'error': f'Only {cart_item.product.stock} items available'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        cart_item.quantity = quantity
+        cart_item.save()
+        serializer = self.get_serializer(cart_item)
+        return Response(serializer.data)
+
+
+class RemoveFromCartAPI(generics.DestroyAPIView):
+    """Remove item from cart"""
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart__user=self.request.user)
+
+
+class GetCartItemsAPI(generics.ListAPIView):
+    """Get all items in user's cart"""
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart__user=self.request.user)

@@ -8,12 +8,4 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.user.username + "'s cart"
-'''
-    def total_price(self):
-        CartItems = self.CartItem.all()
-        for meals in CartItems:
 
-            total_price = 0
-            for i in CartItems:
-                 total_price += i.total_price
-            return total_price'''
