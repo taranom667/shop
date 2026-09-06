@@ -4,8 +4,8 @@ import ssl
 port = 476
 
 smtp_server = "smtp.gmail.com"
-sender_email = "trnmbghry@gmail.com"
-password = "rr4rarar4rrr4"
+sender_email = "8"
+password = "8"
 #getpass("Type your password and press enter: ")
 
 code=12
